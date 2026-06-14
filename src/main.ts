@@ -15,7 +15,7 @@ export default class TodoCompletionPlugin extends Plugin {
       }
 
       const timestamp = window.moment().format("YYYY-MM-DD HH:mm");
-      const replacement = `!TODO[${timestamp}]`;
+      const replacement = `!TODO[${timestamp}] `;
 
       view.dispatch({
         changes: {
