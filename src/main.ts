@@ -4,18 +4,19 @@ import { EditorView, keymap } from "@codemirror/view";
 
 export default class TodoCompletionPlugin extends Plugin {
   async onload() {
-    const expandTodo = (view: EditorView) => {
+    const expandMarker = (view: EditorView) => {
       const { state } = view;
       const pos = state.selection.main.head;
 
-      const before = state.doc.sliceString(Math.max(0, pos - 2), pos);
+      const trigger = state.doc.sliceString(Math.max(0, pos - 2), pos);
+      const marker = trigger === "!t" ? "TODO" : trigger === "!d" ? "DONE" : null;
 
-      if (before !== "!t") {
+      if (marker === null) {
         return false; // let normal Tab behavior continue
       }
 
       const timestamp = window.moment().format("YYYY-MM-DD HH:mm");
-      const replacement = `!TODO[${timestamp}] `;
+      const replacement = `!${marker}[${timestamp}] `;
 
       view.dispatch({
         changes: {
@@ -39,7 +40,7 @@ export default class TodoCompletionPlugin extends Plugin {
               return false;
             }
 
-            if (!expandTodo(view)) {
+            if (!expandMarker(view)) {
               return false;
             }
 
@@ -53,7 +54,7 @@ export default class TodoCompletionPlugin extends Plugin {
         keymap.of([
           {
             key: "Tab",
-            run: expandTodo,
+            run: expandMarker,
           },
         ]),
       ),
