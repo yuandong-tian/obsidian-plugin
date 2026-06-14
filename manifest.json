@@ -1,0 +1,9 @@
+{
+  "id": "todo-completion",
+  "name": "Todo Completion",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Expands !t into a timestamped !TODO marker.",
+  "author": "yuandong-tian",
+  "isDesktopOnly": false
+}
