@@ -4,28 +4,36 @@ import { EditorView, keymap } from "@codemirror/view";
 
 export default class TodoCompletionPlugin extends Plugin {
   async onload() {
+    const triggers = [
+      { trigger: "!todo", marker: "TODO" },
+      { trigger: "!done", marker: "DONE" },
+      { trigger: "!t", marker: "TODO" },
+      { trigger: "!d", marker: "DONE" },
+    ];
+
     const expandMarker = (view: EditorView) => {
       const { state } = view;
       const pos = state.selection.main.head;
 
-      const trigger = state.doc.sliceString(Math.max(0, pos - 2), pos);
-      const marker = trigger === "!t" ? "TODO" : trigger === "!d" ? "DONE" : null;
+      const match = triggers.find(({ trigger }) => {
+        return state.doc.sliceString(Math.max(0, pos - trigger.length), pos) === trigger;
+      });
 
-      if (marker === null) {
+      if (match === undefined) {
         return false; // let normal Tab behavior continue
       }
 
       const timestamp = window.moment().format("YYYY-MM-DD HH:mm");
-      const replacement = `!${marker}[${timestamp}] `;
+      const replacement = `!${match.marker}[${timestamp}] `;
 
       view.dispatch({
         changes: {
-          from: pos - 2,
+          from: pos - match.trigger.length,
           to: pos,
           insert: replacement,
         },
         selection: {
-          anchor: pos - 2 + replacement.length,
+          anchor: pos - match.trigger.length + replacement.length,
         },
       });
 
